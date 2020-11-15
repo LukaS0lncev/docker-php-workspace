@@ -1,3 +1,59 @@
+# Протестированная среда разработки PHP на базе Docker
+
+## Быстрый старт
+**1** Выполните клонирование данного репозитория в любое место на вашем компьютере.
+```$xslt
+git clone https://github.com/LukaS0lncev/docker-php-workspace
+```
+Перейдите в директорию, в которую вы клонировали репозиторий. Все дальнейшие команды следует выполнять именно в этой директории.
+
+**2** Скопируйте файл .env-example в .env
+```$xslt
+cp .env-example .env
+```
+Если это необходимо, то внесите изменения в файл .env. Измените настройки среды разработки в соответствии с вашими требованиями.
+
+**3** Создайте контейнеры и запустите их.
+```$xslt
+docker-compose build && docker-compose up -d
+```
+
+**4** Настройка PhpStorm для работы с контейнером и xdebug под Windows.
+Мы будем использовать php7.3 из нашего билда:
+**4.1** Занесем новые настройки в php.ini
+\docker-php-workspace\php-ini\7.3\php.ini
+```$xslt
+xdebug.remote_autostart=1
+xdebug.remote_enable=1
+xdebug.remote_connect_back=0
+;xdebug.cli_color=0
+xdebug.profiler_enable=0
+xdebug.remote_handler=dbgp
+xdebug.remote_mode=req
+xdebug.remote_port=9003
+xdebug.remote_host=host.docker.internal
+xdebug.idekey=PHPSTORM
+xdebug.remote_log="/tmp/xdebug.log"
+``` 
+**4.2** Перезапустим контейнер
+```$xslt
+docker restart {CONTAINER ID}
+```
+**4.3** Зайдем в настройки PhpStorm
+ Run > Edit Configurations > нажимаем **+** > Php Remote Debug , здесь задаем имя нашей конфигурации **localhost** , ставим галочку Filter debug ..., 
+ здесь выбираем Server (добавляем новый ...), вносим конфигурацию name: localhost; host: 127.0.0.1; port: 80; debuger: xdebug
+ IDE key ставим из нашего php.ini **PHPSTORM**
+ * Сохраняем, теперь выбираем нашу конфигурацию вверху, левее жука и нажимаем Start listening... https://prnt.sc/vjl274
+ * Устанавливаем расширение для хрома https://chrome.google.com/webstore/detail/xdebug-helper/eadndfjplgieldjbigjakmdgkmoaaaoc
+ * Включаем жука в режим отладки
+ * Ставим точки остановки в нужном файле
+ * Запускаем скрипт в браузере и видим отладку в IDE
+ 
+> Ниже инструкция из оригинальной статьи, в репозитории буду делать универсальный билд для разработки Windows + docker + phpStorm
+> потом старая инструкция будет изменена и удалена
+
+
+
 # Среда разработки PHP на базе Docker
 
 Публикация на **Habr**: https://habr.com/ru/post/519500/.
